@@ -1,0 +1,8 @@
+ <h2 class="page-header">Photos</h2>
+ <a href="/users/upload">Upload</a>
+<div class="row" class="photolist">
+{{#each photolist}}
+<h3>Uploaded by : {{username}} at {{time}}</h3>
+<div class ="col s3"><img src = {{path}} alt="image" class="responsive-img" style="height:300px; width:300px;"/><h4 class="center-align caption">{{caption}}</h4></div> 
+{{/each}}
+</div>
