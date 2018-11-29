@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var upload = require('./upload')
-
+var bcrypt = require('bcryptjs');
 var User = require('../models/user');
 var Photos = require('../models/photos');
 
@@ -116,8 +116,52 @@ router.get('/upload',ensureAuthenticated,  function(req, res){
 	res.render("upload");
 });
 
-router.get('/edit', ensureAuthenticated, function(req, res){
-	res.render("edit")
+router.get('/profile', ensureAuthenticated, function(req, res){
+	var user = req.user.username;
+	var email = req.user.email;
+	var password = req.user.password;
+	res.render("profile",{user: user, email:email, password:password});
+});
+
+router.post('/update', function(req, res){
+	var email = req.body.email;
+	var username = req.body.username;
+	var password = req.body.password;
+	var password2 = req.body.password2;
+
+	// Validation
+	req.checkBody('email', 'Email is required').notEmpty();
+	req.checkBody('email', 'Email is not valid').isEmail();
+	req.checkBody('username', 'Username is required').notEmpty();
+	req.checkBody('password', 'Password is required').notEmpty();
+	
+	var errors = req.validationErrors();
+
+	if (errors) {
+		res.render('profile', {
+			errors: errors
+		});
+	}
+	else {
+		var newUser = new User({
+			email: email,
+			username: username,
+			password: password
+		});
+		bcrypt.genSalt(10, function(err, salt) {
+			bcrypt.hash(newUser.password, salt, function(err, hash) {
+				newUser.password = hash;
+				var query = {"username": req.user.username};
+				User.findOneAndUpdate(query, {$set: {"username": newUser.username, "password":newUser.password, "email":newUser.email}}, {new:true}, function(err, user){
+					if (err){
+						console.log(err);
+					}
+					req.flash('success_msg', 'edited successfully');
+					res.redirect('/users/profile');
+				});
+			});
+		});
+	}
 });
 
 router.post('/upload', function(req, res){
@@ -158,5 +202,16 @@ function ensureAuthenticated(req, res, next){
 		res.redirect('/users/login');
 	}
 }
+
+router.get('/deletephoto', function(req, res){
+	var id=req.query.id;
+	Photos.findByIdAndRemove(id, function(err, photos){
+		if (err){
+			console.log(err);
+		}
+		res.redirect('/');
+	});
+});
+
 
 module.exports = router;

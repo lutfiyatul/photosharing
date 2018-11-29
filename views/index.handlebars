@@ -4,5 +4,6 @@
 {{#each photolist}}
 <h3>Uploaded by : {{username}} at {{time}}</h3>
 <div class ="col s3"><img src = {{path}} alt="image" class="responsive-img" style="height:300px; width:300px;"/><h4 class="center-align caption">{{caption}}</h4></div> 
+<a href="/users/deletephoto?id={{_id}}">Delete</a>  <a href="/editphoto?id={{_id}}">Edit</a>
 {{/each}}
 </div>

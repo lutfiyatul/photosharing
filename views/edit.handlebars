@@ -1,0 +1,10 @@
+ <h2 class="page-header">Edit Photos</h2>
+ <img src = {{path}} alt="image" class="responsive-img" style="height:300px; width:300px;"/>
+<form method="post" action="/editphoto?id={{_id}}" enctype="multipart/form-data">
+    <div class="form-group">
+        <label>Caption</label>
+        <input type="text" class="form-control" placeholder="caption"  name="caption">
+        <input type="text" hidden="true" value={{_id}} name="id">
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
